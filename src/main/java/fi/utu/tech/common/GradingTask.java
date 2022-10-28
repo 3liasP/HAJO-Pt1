@@ -8,10 +8,11 @@ import java.util.Random;
  * You need to modify this file
  */
 
-public class GradingTask  {
+public class GradingTask implements Runnable {
 
     private Random rnd = new Random();
-
+    private List<Submission> ungradedSubmissions;
+    private List<Submission> gradedSubmissions;
     /**
      * Grades all given submissions. Does not mutate the given objects
      * @param submissions List of submissions to be graded
@@ -38,4 +39,27 @@ public class GradingTask  {
         }
         return s.grade(rnd.nextInt(6));
     }
+
+    public void run() {
+        List<Submission> gradedSubmissions =  gradeAll(ungradedSubmissions);
+        setGradedSubmissions(gradedSubmissions);
+    }
+
+    public List<Submission> getUngradedSubmissions() {
+        return ungradedSubmissions;
+    }
+
+    public void setUngradedSubmissions(List<Submission> ungradedSubmissions) {
+        this.ungradedSubmissions = ungradedSubmissions;
+    }
+
+    public List<Submission> getGradedSubmissions() {
+        return gradedSubmissions;
+    }
+
+    public void setGradedSubmissions(List<Submission> gradedSubmissions) {
+        this.gradedSubmissions = gradedSubmissions;
+    }
+
+
 }

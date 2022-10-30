@@ -38,7 +38,7 @@ public class App3 {
         Thread t3 = new Thread(gradingTask);
         t3.start();
         
-        // odotetaan, että arvoijasäikeet ovat valmiit
+        // odotetaan, että arvoijasäie ovat valmiit
         try {
             t3.join(); 
             System.out.println("Arvioijasäie valmis!");  // ei ole pakko tulostaa

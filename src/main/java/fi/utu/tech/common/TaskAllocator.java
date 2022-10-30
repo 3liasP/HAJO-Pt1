@@ -56,8 +56,24 @@ public class TaskAllocator {
      * @return List of GradingTasks allocated with some amount of submissions (depends on the implementation)
      */
     public static List<GradingTask> allocate(List<Submission> submissions, int taskCount) {
-        // TODO: Tehtävä 5
-        // Retruns null for now to suppress warnings
-        return null;
+        int size = submissions.size();
+        float fsizeOfSublist = size / taskCount;
+        int partitionSize;
+        partitionSize = (int)fsizeOfSublist + 1;
+
+        List<List<Submission>> partitions = new ArrayList<>();
+ 
+        for (int i = 0; i < submissions.size(); i += partitionSize) {
+            partitions.add(submissions.subList(i, Math.min(i + partitionSize,submissions.size())));
+        }
+
+        List<GradingTask> listOfAll = new ArrayList<GradingTask>();
+
+        for (List<Submission> partition : partitions) {
+            GradingTask gt = new GradingTask();
+            gt.setUngradedSubmissions(partition);
+            listOfAll.add(gt);
+        }
+        return listOfAll;
     }
 }

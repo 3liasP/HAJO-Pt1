@@ -28,28 +28,25 @@ public class App4 {
             System.out.println(ug);
         }
 
-        // Luodaan uusi arviointitehtävä
-        // GradingTask gradingTask = new GradingTask();
-        // Annetaan palautukset gradeAll-metodille ja saadaan arvioidut palautukset takaisin
-        // List<Submission> gradedSubmissions =  gradingTask.gradeAll(ungradedSubmissions);
-        /*
-            * TODO: Muokkaa common-pakkauksen GradingTask-luokkaa siten,
-            * että alla oleva run()-metodi (ilman argumentteja!) tarkistaa palautukset (ungradedSubmissions).
-            * Yllä olevaa gt.gradeAll()-metodia ei tule enää käyttää suoraan
-            * tästä main-metodista. Tarkemmat ohjeet tehtävänannossa.
-            * Joudut keksimään, miten GradingTaskille voi antaa tehtävät ja miten ne siltä saa noukittua
-            */
+        // Luodaan uusi GradingTask-olio ja annetaan se sloppyAllocator:ille
+        // jaettavaksi kahtia
         List<GradingTask> allocatedList = new ArrayList<GradingTask>();
         allocatedList = TaskAllocator.sloppyAllocator(ungradedSubmissions);
+
+        // Luodaan sloppyAllocator:in palauttaman listan alkioiden määrän
+        // mukainen määrä säikeitä. Ilmoitetaan myös, monesko säie on
+        // äsittelyssä
         System.out.println("------------ CUT HERE ------------");
-        for (int x=0; x<(allocatedList.size()); x++)
-        {
-            Thread temp = new Thread(allocatedList.get(x));
-            temp.start();
-            System.out.println("Säie " + x + " aloitettu!");
+        int taskCount = 2;
+        Thread[] threads = new Thread[taskCount];
+        for (int x=0; x<(allocatedList.size()); x++) {
+            threads[x] = new Thread(allocatedList.get(x));
+            threads[x].start();
+            System.out.println("Säie " + x + " aloitettu!"); // Näyttää, montako säiettä luodaan
+        }
+        for (Thread thread : threads) {
             try {
-                temp.join(); 
-                System.out.println("Säie " + x + " valmis!");  // ei ole pakko tulostaa
+                thread.join(); 
             } catch (InterruptedException e) {
                 System.out.println("InterruptedException!");
             }

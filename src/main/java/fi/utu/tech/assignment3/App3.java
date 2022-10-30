@@ -40,11 +40,10 @@ public class App3 {
         
         // odotetaan, että arvoijasäikeet ovat valmiit
         try {
-        t3.join(); 
-        System.out.println("t3 finished");  
+            t3.join(); 
+            System.out.println("Arvioijasäie valmis!");  // ei ole pakko tulostaa
         } catch (InterruptedException e) {
-        // Handling the exception
-        System.out.println("Interrupted Exception");
+            System.out.println("InterruptedException!");
         }
         // pääsäie jatkaa
         

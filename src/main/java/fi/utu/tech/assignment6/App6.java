@@ -1,10 +1,16 @@
 package fi.utu.tech.assignment6;
 
 import java.util.ArrayList;
+//import java.util.Collection;
 import java.util.List;
+//import java.util.concurrent.ExecutionException;
+//import java.util.concurrent.Callable;
+//import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+//import java.util.concurrent.Future;
+//import java.util.concurrent.TimeUnit;
+//import java.util.concurrent.TimeoutException;
 
 // Käytetään tehtässä 1 muokattua GradingTask-oliota
 import fi.utu.tech.common.GradingTask;
@@ -15,8 +21,8 @@ import fi.utu.tech.common.Submission;
 import fi.utu.tech.common.SubmissionGenerator;
 import fi.utu.tech.common.SubmissionGenerator.Strategy;
 
-public class App6 {
-    public static void main(String[] args) {
+public class App6{
+    public static void main(String[] args){
         // Generoidaan kasa esimerkkitehtäväpalautuksia
         List<Submission> ungradedSubmissions = SubmissionGenerator.generateSubmissions(21, 200, Strategy.UNFAIR);
 
@@ -28,43 +34,34 @@ public class App6 {
         // Otetaan funktion aloitusaika talteen suoritusajan laskemista varten
         long startTime = System.currentTimeMillis();
 
-        // Generoidaan kasa esimerkkitehtäväpalautuksia (HUOM. Nämä on helpompia tarkistettavia, siksi
-        // kommetoitu pois!)
-        // List<Submission> ungradedSubmissions = SubmissionGenerator.generateSubmissions(21, 200, Strategy.STATIC);
-
         // Tulostetaan tiedot esimerkkipalautuksista ennen arviointia
         for (var ug : ungradedSubmissions) {
             System.out.println(ug);
         }
 
-        // Luodaan uusi GradingTask-olio ja annetaan se allocate:lle
-        // jaettavaksi osiin
-        List<GradingTask> allocatedList = new ArrayList<GradingTask>();
-        int taskCount = 5;
-        allocatedList = TaskAllocator.allocate(ungradedSubmissions, taskCount);
-        ExecutorService es = Executors.newFixedThreadPool(taskCount);
-        System.out.println("------------ CUT HERE ------------");
-        Thread[] threads = new Thread[taskCount];
-        for (int x=0; x<(allocatedList.size()); x++) {
-            threads[x] = new Thread(allocatedList.get(x));
+        // Luodaan uusi arviointitehtävä
+        int taskCount = 21;
+        Boolean terminated = false;
+        ExecutorService es = Executors.newFixedThreadPool(10);
+        List<GradingTask> gt = TaskAllocator.allocate(ungradedSubmissions, taskCount);
+        List<Submission> gradedSubmissions = new ArrayList<>();
+        for(GradingTask gt1 : gt){
+            es.execute(gt1);
         }
-        for (int i=0; i<taskCount; i++) {
-            es.execute(threads[i]);
+        while(terminated == false){
+            es.shutdown();
+            terminated = es.isTerminated();
         }
-        for (Thread thread : threads) {
-            try {
-                thread.join(); 
-            } catch (InterruptedException e) {
-                System.out.println("InterruptedException!");
-            }
+        
+
+        for(GradingTask gt2 : gt){
+            gradedSubmissions.addAll(gt2.getGradedSubmissions());
         }
-        es.shutdown();
+
         // Tulostetaan arvioidut palautukset
         System.out.println("------------ CUT HERE ------------");
-        for (var gradingTask : allocatedList){
-            for (var gs : gradingTask.getGradedSubmissions()) {
-                System.out.println(gs);
-            }
+        for (var gs : gradedSubmissions) {
+            System.out.println(gs);
         }
 
         // Lasketaan funktion suoritusaika
